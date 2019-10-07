@@ -48,16 +48,18 @@ class TodoList extends Component {
     }
 
     handleAdd = () => {
-        const {data, dataIsEdit} = this.state;
-        const dataId = data.length + 1;
-        const inputList = {
-          id : dataId,
-          title: this.state.inputList
+        if(!(this.state.inputList === null || this.state.inputList === "")){
+            const {data} = this.state;
+            const dataId = data.length + 1;
+            const inputList = {
+              id : dataId,
+              title: this.state.inputList
+            };
+            data.push(inputList);
+            this.setState({ data, inputList:""});
+            this.empty.clear()
         };
-        data.push(inputList);
-        this.setState({ data: inputList});
-        this.empty.clear()
-        console.log(data);
+        
 
       }
 
