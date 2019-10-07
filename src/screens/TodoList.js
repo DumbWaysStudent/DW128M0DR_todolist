@@ -8,6 +8,7 @@ import {
   SafeAreaView,
   TextInput,
   TouchableHighlight,
+  TouchableOpacity
 } from 'react-native';
 
 class TodoIsDone extends Component {
@@ -41,11 +42,13 @@ class TodoIsDone extends Component {
                   title : "Run",
                   checked : false
                 },
-              ]
+              ],
+              btnValue : true,
+              updateId: 0,
         }
     }
 
-    Item = ({id, title, onDelete, onChecked, checked}) => {
+    Item = ({id, title, onDelete, onChecked, checked, onUpdate}) => {
       return(
         <View style={styles.item}>
           <CheckBox style={styles.checkBox}
@@ -55,27 +58,45 @@ class TodoIsDone extends Component {
           />
 
           <Text style={styles.title}>{title}</Text>
+
+          <TouchableOpacity onPress = {()=> onUpdate(id)} >
+              <Icon type="FontAwesome" name="edit" style={styles.iconEdit} />
+          </TouchableOpacity>
           
-          <TouchableHighlight onPress = {()=> onDelete(id)} >
+          <TouchableOpacity onPress = {()=> onDelete(id)} >
               <Icon type="FontAwesome" name="trash" style={styles.icon} />
-          </TouchableHighlight>
+          </TouchableOpacity>
         
         </View>
       );
     }
-    
-    handleAdd = () => {
-        if(!(this.state.inputList === null || this.state.inputList === "")){
-            const {data} = this.state;
-            const dataId = data.length + 1;
-            const inputList = {
-              id : dataId,
-              title: this.state.inputList
-            };
-            data.push(inputList);
-            this.setState({ data, inputList:""});
-            this.empty.clear()
+
+    handleBtn = () => {
+      if (!this.state.inputList){
+        return;
+      }
+      const data = this.state.data;
+      if (this.state.btnValue === true) {
+        const dataId = data.length + 1;
+        const inputList = {
+          id : dataId,
+          title: this.state.inputList
         };
+        data.push(inputList);
+        this.setState({ data, inputList: '' });
+        this.empty.clear()
+      } else {
+       data.map(item => {
+         if(this.state.updateId===item.id){
+           item.title = this.state.inputList
+         }
+         return item
+       })
+       this.setState({
+         data, btnValue:true
+       })
+      }
+      this.empty.clear()
     }
 
     handdleRemove = (id) => {
@@ -99,6 +120,17 @@ class TodoIsDone extends Component {
         })
     }
 
+    handleUpdate= (id) => {
+      const data = this.state.data;
+      data.map( item => {
+        if (id === item.id){
+            this.setState({ btnValue : false, inputList : item.title, updateId: id})
+        }
+        return item;
+      })
+    }
+
+
     render(){
         return(
           <SafeAreaView style={styles.container}>
@@ -107,16 +139,20 @@ class TodoIsDone extends Component {
                     placeholder="Add List..." 
                     onChangeText={inputList => this.setState({ inputList }) } 
                     style={styles.textInput}
-                    ref={ref => this.empty = ref} />
+                    ref={ref => this.empty = ref}
+                    value={this.state.inputList}
+                    />
 
-                    <TouchableHighlight onPress={this.handleAdd} style={styles.button}>
-                        <Text style={styles.btnText}>Add</Text>
+                    <TouchableHighlight onPress={this.handleBtn} style={styles.button}>
+                        <Text style={styles.btnText}>
+                          {this.state.btnValue ? "Add" : "Edit"}
+                        </Text>
                     </TouchableHighlight>
               </View>
             
             <FlatList
               data = {this.state.data}
-              renderItem = {({item}) => <this.Item title={item.title} id={item.id} checked = {item.checked} onChecked = {this.handleChecked} onDelete = {this.handdleRemove} />}
+              renderItem = {({item}) => <this.Item title={item.title} id={item.id} edit={item.btnValue} checked = {item.checked} onUpdate = {this.handleUpdate} onChecked = {this.handleChecked} onDelete = {this.handdleRemove} />}
               keyExtractor = {item => item.id}> >
             </FlatList>
           </SafeAreaView>
@@ -160,6 +196,10 @@ const styles = StyleSheet.create({
   icon : {
     flex : 10,
     color : 'red',
+  },
+  iconEdit : {
+    marginRight : 10,
+    color : 'green',
   },
   title : {
     marginLeft:20,
