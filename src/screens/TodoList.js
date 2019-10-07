@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Icon} from 'native-base';
+import {Icon, CheckBox} from 'native-base';
 import {
   View,
   Text,
@@ -7,10 +7,10 @@ import {
   StyleSheet,
   SafeAreaView,
   TextInput,
-  TouchableOpacity
+  TouchableHighlight,
 } from 'react-native';
 
-class TodoList extends Component {
+class TodoIsDone extends Component {
     constructor(){
         super();
         this.state = {
@@ -18,41 +18,52 @@ class TodoList extends Component {
             data : [
                 { 
                   id : 1,
-                  title : "Work"
+                  title : "Work",
+                  checked : false
                 },
                 {
                   id : 2,
-                  title : "Swim"
+                  title : "Swim",
+                  checked : false
                 },
                 {
                   id : 3,
-                  title : "Study"
+                  title : "Study",
+                  checked : false
                 },
                 {
                   id : 4,
-                  title : "Sleep"
+                  title : "Sleep",
+                  checked : false
                 },
                 {
                   id : 5,
-                  title : "Run"
+                  title : "Run",
+                  checked : false
                 },
               ]
         }
     }
 
-    Item = ({id, title, onDelete}) => {
+    Item = ({id, title, onDelete, onChecked, checked}) => {
       return(
         <View style={styles.item}>
+          <CheckBox style={styles.checkBox}
+            title='Click Here'
+            checked={checked}
+            onPress={() => onChecked(id) }
+          />
+
           <Text style={styles.title}>{title}</Text>
           
-          <TouchableOpacity onPress = {()=> onDelete(id)} >
+          <TouchableHighlight onPress = {()=> onDelete(id)} >
               <Icon type="FontAwesome" name="trash" style={styles.icon} />
-          </TouchableOpacity>
+          </TouchableHighlight>
         
         </View>
       );
     }
-
+    
     handleAdd = () => {
         if(!(this.state.inputList === null || this.state.inputList === "")){
             const {data} = this.state;
@@ -75,6 +86,19 @@ class TodoList extends Component {
       })
     }
 
+    handleChecked = (id) => {
+        const data = this.state.data;
+        const isCheck = data.map( item => {
+            if (id === item.id) {
+                item.checked = !item.checked;
+            } 
+            return item;
+        }) 
+        this.setState({
+            data : isCheck
+        })
+    }
+
     render(){
         return(
           <SafeAreaView style={styles.container}>
@@ -85,22 +109,22 @@ class TodoList extends Component {
                     style={styles.textInput}
                     ref={ref => this.empty = ref} />
 
-                    <TouchableOpacity onPress={this.handleAdd} style={styles.button}>
+                    <TouchableHighlight onPress={this.handleAdd} style={styles.button}>
                         <Text style={styles.btnText}>Add</Text>
-                    </TouchableOpacity>
+                    </TouchableHighlight>
               </View>
             
             <FlatList
               data = {this.state.data}
-              renderItem = {({item}) => <this.Item title={item.title} id={item.id} onDelete = {this.handdleRemove} />}
+              renderItem = {({item}) => <this.Item title={item.title} id={item.id} checked = {item.checked} onChecked = {this.handleChecked} onDelete = {this.handdleRemove} />}
               keyExtractor = {item => item.id}> >
-              </FlatList>
+            </FlatList>
           </SafeAreaView>
         );
       }
 }
 
-export default TodoList;
+export default TodoIsDone;
 
 const styles = StyleSheet.create({
   container : {
@@ -138,6 +162,7 @@ const styles = StyleSheet.create({
     color : 'red',
   },
   title : {
+    marginLeft:20,
     flex : 90,
     fontSize : 14,
   },
@@ -150,5 +175,4 @@ const styles = StyleSheet.create({
     marginVertical : 5,
     marginHorizontal : 10,
   },
-
 });
