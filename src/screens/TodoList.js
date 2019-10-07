@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import {Icon} from 'native-base';
 import {
   View,
   Text,
@@ -6,16 +7,8 @@ import {
   StyleSheet,
   SafeAreaView,
   TextInput,
-  TouchableHighlight,
+  TouchableOpacity
 } from 'react-native';
-
-function Item ({title}) {
-  return(
-    <View style={styles.item}>
-      <Text style={styles.title}>{title}</Text>
-    </View>
-  );
-}
 
 class TodoList extends Component {
     constructor(){
@@ -47,6 +40,19 @@ class TodoList extends Component {
         }
     }
 
+    Item = ({id, title, onDelete}) => {
+      return(
+        <View style={styles.item}>
+          <Text style={styles.title}>{title}</Text>
+          
+          <TouchableOpacity onPress = {()=> onDelete(id)} >
+              <Icon type="FontAwesome" name="trash" style={styles.icon} />
+          </TouchableOpacity>
+        
+        </View>
+      );
+    }
+
     handleAdd = () => {
         if(!(this.state.inputList === null || this.state.inputList === "")){
             const {data} = this.state;
@@ -59,11 +65,17 @@ class TodoList extends Component {
             this.setState({ data, inputList:""});
             this.empty.clear()
         };
-        
+    }
 
-      }
+    handdleRemove = (id) => {
+      const data = this.state.data;
+      const newData = data.filter(dataref => dataref.id !== id);
+      this.setState({
+        data : newData
+      })
+    }
 
-      render(){
+    render(){
         return(
           <SafeAreaView style={styles.container}>
               <View style={styles.addList}>
@@ -73,16 +85,16 @@ class TodoList extends Component {
                     style={styles.textInput}
                     ref={ref => this.empty = ref} />
 
-                    <TouchableHighlight onPress={this.handleAdd} style={styles.button}>
+                    <TouchableOpacity onPress={this.handleAdd} style={styles.button}>
                         <Text style={styles.btnText}>Add</Text>
-                    </TouchableHighlight>
+                    </TouchableOpacity>
               </View>
             
             <FlatList
               data = {this.state.data}
-              renderItem = {({item}) => <Item title={item.title} />}
-              keyExtractor = {item => item.id}
-            />
+              renderItem = {({item}) => <this.Item title={item.title} id={item.id} onDelete = {this.handdleRemove} />}
+              keyExtractor = {item => item.id}> >
+              </FlatList>
           </SafeAreaView>
         );
       }
@@ -114,11 +126,20 @@ const styles = StyleSheet.create({
     color : 'white',
   },
   item : {
+    flexDirection : 'row',
     borderRadius : 10,
     backgroundColor : "#FFF",
     padding : 10,
     marginVertical : 5,
     marginHorizontal : 10,
+  },
+  icon : {
+    flex : 10,
+    color : 'red',
+  },
+  title : {
+    flex : 90,
+    fontSize : 14,
   },
   textInput : {
     maxHeight : 45,
@@ -129,7 +150,5 @@ const styles = StyleSheet.create({
     marginVertical : 5,
     marginHorizontal : 10,
   },
-  title : {
-    fontSize : 14,
-  },
+
 });
