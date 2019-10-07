@@ -60,4 +60,4 @@ buck-out/
 
 ios
 android
-__test__
+__tests__
