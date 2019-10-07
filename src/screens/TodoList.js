@@ -11,7 +11,7 @@ import {
   TouchableOpacity
 } from 'react-native';
 
-class TodoIsDone extends Component {
+class TodoList extends Component {
     constructor(){
         super();
         this.state = {
@@ -160,7 +160,7 @@ class TodoIsDone extends Component {
       }
 }
 
-export default TodoIsDone;
+export default TodoList;
 
 const styles = StyleSheet.create({
   container : {
