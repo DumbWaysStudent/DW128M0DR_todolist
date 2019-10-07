@@ -8,6 +8,7 @@ import {
   SafeAreaView,
   TextInput,
   TouchableHighlight,
+  TouchableOpacity
 } from 'react-native';
 
 class TodoIsDone extends Component {
@@ -56,9 +57,9 @@ class TodoIsDone extends Component {
 
           <Text style={styles.title}>{title}</Text>
           
-          <TouchableHighlight onPress = {()=> onDelete(id)} >
+          <TouchableOpacity onPress = {()=> onDelete(id)} >
               <Icon type="FontAwesome" name="trash" style={styles.icon} />
-          </TouchableHighlight>
+          </TouchableOpacity>
         
         </View>
       );
