@@ -4,32 +4,10 @@ import {
   Text,
   FlatList,
   StyleSheet,
-  SafeAreaView
+  SafeAreaView,
+  TextInput,
+  TouchableHighlight,
 } from 'react-native';
-
-
-const data = [
-  { 
-    id : 1,
-    title : "Work"
-  },
-  {
-    id : 2,
-    title : "Swim"
-  },
-  {
-    id : 3,
-    title : "Study"
-  },
-  {
-    id : 4,
-    title : "Sleep"
-  },
-  {
-    id : 5,
-    title : "Run"
-  },
-];
 
 function Item ({title}) {
   return(
@@ -39,17 +17,73 @@ function Item ({title}) {
   );
 }
 
-function TodoList () {
-  return(
-    <SafeAreaView style={styles.container}>
-      
-      <FlatList
-        data = {data}
-        renderItem = {({item}) => <Item title={item.title} />}
-        keyExtractor = {item => item.id}
-      />
-    </SafeAreaView>
-  );
+class TodoList extends Component {
+    constructor(){
+        super();
+        this.state = {
+            inputList : "",
+            data : [
+                { 
+                  id : 1,
+                  title : "Work"
+                },
+                {
+                  id : 2,
+                  title : "Swim"
+                },
+                {
+                  id : 3,
+                  title : "Study"
+                },
+                {
+                  id : 4,
+                  title : "Sleep"
+                },
+                {
+                  id : 5,
+                  title : "Run"
+                },
+              ]
+        }
+    }
+
+    handleAdd = () => {
+        const {data, dataIsEdit} = this.state;
+        const dataId = data.length + 1;
+        const inputList = {
+          id : dataId,
+          title: this.state.inputList
+        };
+        data.push(inputList);
+        this.setState({ data: inputList});
+        this.empty.clear()
+        console.log(data);
+
+      }
+
+      render(){
+        return(
+          <SafeAreaView style={styles.container}>
+              <View style={styles.addList}>
+                  <TextInput 
+                    placeholder="Add List..." 
+                    onChangeText={inputList => this.setState({ inputList }) } 
+                    style={styles.textInput}
+                    ref={ref => this.empty = ref} />
+
+                    <TouchableHighlight onPress={this.handleAdd} style={styles.button}>
+                        <Text style={styles.btnText}>Add</Text>
+                    </TouchableHighlight>
+              </View>
+            
+            <FlatList
+              data = {this.state.data}
+              renderItem = {({item}) => <Item title={item.title} />}
+              keyExtractor = {item => item.id}
+            />
+          </SafeAreaView>
+        );
+      }
 }
 
 export default TodoList;
@@ -59,9 +93,36 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#E6E7E8",
   },
+  addList : {
+      flexDirection: 'row',
+      marginBottom : 30,
+  },
+  button : {
+    backgroundColor : 'green',
+    borderRadius : 10,
+    marginVertical : 5,
+    marginRight : 10,
+    flex: 20,
+    height : 45,
+    alignItems : 'center',
+    padding : 10,
+  },
+  btnText : {
+    fontSize : 18,
+    color : 'white',
+  },
   item : {
     borderRadius : 10,
-    backgroundColor : "#FFFFFF",
+    backgroundColor : "#FFF",
+    padding : 10,
+    marginVertical : 5,
+    marginHorizontal : 10,
+  },
+  textInput : {
+    maxHeight : 45,
+    flex : 80,
+    borderRadius : 10,
+    backgroundColor : "#FFF",
     padding : 10,
     marginVertical : 5,
     marginHorizontal : 10,
